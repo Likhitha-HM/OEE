@@ -42,13 +42,11 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-
                 withCredentials([usernamePassword(
                     credentialsId: 'dockerhub-creds',
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
-
                     sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
                     sh 'docker push likhithahm/demo-app8:latest'
                 }
@@ -70,20 +68,35 @@ pipeline {
     }
 
     post {
-
         success {
             emailext (
                 subject: "SUCCESS: ${JOB_NAME} #${BUILD_NUMBER}",
-                body: "Build succeeded!\nCheck: ${BUILD_URL}",
-                to: "likhithahm953@gmail.com"
+                body: """
+                    Build succeeded!
+                    
+                    Project: ${JOB_NAME}
+                    Build number: ${BUILD_NUMBER}
+                    Build URL: ${BUILD_URL}
+                    Console output: ${BUILD_URL}console
+                """,
+                to: 'likhithahm953@gmail.com',
+                debug: true   // <-- prints SMTP conversation in the log (helps diagnose)
             )
         }
 
         failure {
             emailext (
                 subject: "FAILED: ${JOB_NAME} #${BUILD_NUMBER}",
-                body: "Build failed!\nCheck: ${BUILD_URL}",
-                to: "likhithahm953@gmail.com"
+                body: """
+                    Build failed!
+                    
+                    Project: ${JOB_NAME}
+                    Build number: ${BUILD_NUMBER}
+                    Build URL: ${BUILD_URL}
+                    Console output: ${BUILD_URL}console
+                """,
+                to: 'likhithahm953@gmail.com',
+                debug: true
             )
         }
     }
