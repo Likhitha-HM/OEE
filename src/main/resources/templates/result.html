@@ -1,17 +1,67 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <title>Survey Result</title>
+
+    <title>Survey Submitted</title>
+
+    <style>
+
+        body {
+
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #1e3c72, #2a5298);
+            color: white;
+            text-align: center;
+            padding-top: 100px;
+
+        }
+
+        .box {
+
+            width: 50%;
+            margin: auto;
+            background: white;
+            color: black;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0px 0px 20px rgba(0,0,0,0.3);
+
+        }
+
+        h1 {
+
+            color: #1e3c72;
+
+        }
+
+        p {
+
+            font-size: 18px;
+
+        }
+
+    </style>
+
 </head>
 
 <body>
 
-<h2>Survey Submitted Successfully</h2>
+<div class="box">
 
-<p th:text="'Hello ' + ${name}"></p>
+    <h1>Survey Submitted Successfully</h1>
 
-<p th:text="${message}"></p>
+    <p th:text="'Thank you, ' + ${name}"></p>
+
+    <p th:text="${message}"></p>
+
+    <p th:text="'Department: ' + ${department}"></p>
+
+    <p th:text="'Year: ' + ${year}"></p>
+
+    <p th:text="'Average Rating: ' + ${average}"></p>
+
+</div>
 
 </body>
 

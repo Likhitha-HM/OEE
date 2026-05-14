@@ -1,31 +1,163 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <title>College Survey</title>
+
+    <title>College Campus Survey</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #1e3c72, #2a5298);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+
+            width: 60%;
+            margin: 40px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0px 0px 20px rgba(0,0,0,0.3);
+
+        }
+
+        h1 {
+
+            text-align: center;
+            color: #1e3c72;
+            margin-bottom: 30px;
+
+        }
+
+        label {
+
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+
+        }
+
+        input,
+        select,
+        textarea {
+
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 15px;
+
+        }
+
+        textarea {
+
+            resize: vertical;
+
+        }
+
+        .rating-group {
+
+            margin-top: 10px;
+
+        }
+
+        button {
+
+            width: 100%;
+            padding: 15px;
+            margin-top: 25px;
+            background: #1e3c72;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+
+        }
+
+        button:hover {
+
+            background: #16325c;
+
+        }
+
+    </style>
+
 </head>
 
 <body>
 
-<h2>College Campus Survey</h2>
+<div class="container">
 
-<form action="/submit" method="post">
+    <h1>College Campus Survey</h1>
 
-    <label>Name:</label>
-    <input type="text" name="name" required>
+    <form action="/submit" method="post">
 
-    <br><br>
+        <label>Full Name</label>
+        <input type="text" name="name" required>
 
-    <label>Campus Rating:</label>
-    <input type="number" name="rating" min="1" max="5" required>
+        <label>Email Address</label>
+        <input type="email" name="email" required>
 
-    <br><br>
+        <label>Department</label>
 
-    <button type="submit">
-        Submit
-    </button>
+        <select name="department" required>
 
-</form>
+            <option value="">Select Department</option>
+            <option>CSE</option>
+            <option>ISE</option>
+            <option>ECE</option>
+            <option>EEE</option>
+            <option>Mechanical</option>
+            <option>Civil</option>
+
+        </select>
+
+        <label>Year of Study</label>
+
+        <select name="year" required>
+
+            <option value="">Select Year</option>
+            <option>1st Year</option>
+            <option>2nd Year</option>
+            <option>3rd Year</option>
+            <option>4th Year</option>
+
+        </select>
+
+        <label>Placements & Career Support (1-5)</label>
+        <input type="number" name="placement" min="1" max="5" required>
+
+        <label>Campus Facilities (1-5)</label>
+        <input type="number" name="facilities" min="1" max="5" required>
+
+        <label>Teachers & Teaching Quality (1-5)</label>
+        <input type="number" name="teaching" min="1" max="5" required>
+
+        <label>Overall Education Quality (1-5)</label>
+        <input type="number" name="education" min="1" max="5" required>
+
+        <label>Extracurricular Activities (1-5)</label>
+        <input type="number" name="activities" min="1" max="5" required>
+
+        <label>Feedback / Comments</label>
+        <textarea name="feedback" rows="4"></textarea>
+
+        <label>Suggestions for Improvement</label>
+        <textarea name="suggestions" rows="4"></textarea>
+
+        <button type="submit">
+            Submit Survey
+        </button>
+
+    </form>
+
+</div>
 
 </body>
 
