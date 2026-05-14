@@ -71,32 +71,16 @@ pipeline {
         success {
             emailext (
                 subject: "SUCCESS: ${JOB_NAME} #${BUILD_NUMBER}",
-                body: """
-                    Build succeeded!
-                    
-                    Project: ${JOB_NAME}
-                    Build number: ${BUILD_NUMBER}
-                    Build URL: ${BUILD_URL}
-                    Console output: ${BUILD_URL}console
-                """,
-                to: 'likhithahm953@gmail.com',
-                debug: true   // <-- prints SMTP conversation in the log (helps diagnose)
+                body: "Build succeeded!\nCheck: ${BUILD_URL}",
+                to: "likhithahm953@gmail.com"
             )
         }
 
         failure {
             emailext (
                 subject: "FAILED: ${JOB_NAME} #${BUILD_NUMBER}",
-                body: """
-                    Build failed!
-                    
-                    Project: ${JOB_NAME}
-                    Build number: ${BUILD_NUMBER}
-                    Build URL: ${BUILD_URL}
-                    Console output: ${BUILD_URL}console
-                """,
-                to: 'likhithahm953@gmail.com',
-                debug: true
+                body: "Build failed!\nCheck: ${BUILD_URL}",
+                to: "likhithahm953@gmail.com"
             )
         }
     }
