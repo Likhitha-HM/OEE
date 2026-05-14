@@ -6,11 +6,6 @@ pipeline {
         jdk 'JDK21'
     }
 
-    environment {
-        IMAGE_NAME = "likhithahm/demo-app8:latest"
-        CONTAINER_NAME = "survey-app"
-    }
-
     stages {
 
         stage('Checkout') {
@@ -41,35 +36,35 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $IMAGE_NAME .'
+                sh 'docker build -t likhithahm/demo-app8:latest .'
             }
         }
 
         stage('Push Docker Image') {
             steps {
-                withDockerRegistry([credentialsId: 'dockerhub-credentials', url: '']) {
-                    sh 'docker push $IMAGE_NAME'
+
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+
+                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                    sh 'docker push likhithahm/demo-app8:latest'
                 }
             }
         }
 
         stage('Stop Old Container') {
             steps {
-                sh '''
-                docker stop $CONTAINER_NAME || true
-                docker rm $CONTAINER_NAME || true
-                '''
+                sh 'docker stop demo-app8-container || true'
+                sh 'docker rm demo-app8-container || true'
             }
         }
 
         stage('Run Docker Container') {
             steps {
-                sh '''
-                docker run -d \
-                --name $CONTAINER_NAME \
-                -p 9090:8080 \
-                $IMAGE_NAME
-                '''
+                sh 'docker run -d -p 8088:8080 --name demo-app8-container likhithahm/demo-app8:latest'
             }
         }
     }
@@ -77,35 +72,17 @@ pipeline {
     post {
 
         success {
-            emailext(
+            emailext (
                 subject: "SUCCESS: ${JOB_NAME} #${BUILD_NUMBER}",
-                body: """
-                Build SUCCESS
-
-                Project: ${JOB_NAME}
-                Build Number: ${BUILD_NUMBER}
-
-                Docker Container Running Successfully.
-
-                Build URL:
-                ${BUILD_URL}
-                """,
+                body: "Build succeeded!\nCheck: ${BUILD_URL}",
                 to: "likhithahm953@gmail.com"
             )
         }
 
         failure {
-            emailext(
+            emailext (
                 subject: "FAILED: ${JOB_NAME} #${BUILD_NUMBER}",
-                body: """
-                Build FAILED
-
-                Project: ${JOB_NAME}
-                Build Number: ${BUILD_NUMBER}
-
-                Check Jenkins Console Output:
-                ${BUILD_URL}
-                """,
+                body: "Build failed!\nCheck: ${BUILD_URL}",
                 to: "likhithahm953@gmail.com"
             )
         }
