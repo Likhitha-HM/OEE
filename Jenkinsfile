@@ -71,14 +71,20 @@ pipeline {
 
     post {
 
-        post {
-    always {
-        emailext(
-            subject: "Build Status: ${currentBuild.currentResult}",
-            body: "Build completed.",
-            to: "manjunathmanjunatht71@gmail.com"
-        )
-    }
-}
+        success {
+            emailext (
+                subject: "SUCCESS: ${JOB_NAME} #${BUILD_NUMBER}",
+                body: "Build succeeded!\nCheck: ${BUILD_URL}",
+                to: "likhithahm953@gmail.com"
+            )
+        }
+
+        failure {
+            emailext (
+                subject: "FAILED: ${JOB_NAME} #${BUILD_NUMBER}",
+                body: "Build failed!\nCheck: ${BUILD_URL}",
+                to: "likhithahm953@gmail.com"
+            )
+        }
     }
 }
