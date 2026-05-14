@@ -1,75 +1,74 @@
 pipeline {
-
     agent any
 
+    tools {
+        maven 'Maven'
+        jdk 'JDK21'
+    }
+
     environment {
-
         IMAGE_NAME = "likhithahm/demo-app8:latest"
-
-        NOTIFY_EMAIL = "likhithahm953@gmail.com"
+        CONTAINER_NAME = "survey-app"
     }
 
     stages {
 
-        stage('Clone Repository') {
-
+        stage('Checkout') {
             steps {
-
                 git branch: 'main',
-                url: 'https://github.com/Likhitha-HM/OEE.git'
+                    url: 'https://github.com/Likhitha-HM/OEE.git',
+                    credentialsId: 'github-token'
             }
         }
 
-        stage('Build Maven Project') {
-
+        stage('Build') {
             steps {
-
-                sh 'mvn clean package'
+                sh 'mvn clean compile'
             }
         }
 
-        stage('Run Tests') {
-
+        stage('Test') {
             steps {
-
                 sh 'mvn test'
             }
         }
 
-        stage('Build Docker Image') {
-
+        stage('Package') {
             steps {
+                sh 'mvn package'
+            }
+        }
 
-                sh "docker build -t ${IMAGE_NAME} ."
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t $IMAGE_NAME .'
             }
         }
 
         stage('Push Docker Image') {
-
             steps {
-
-                withDockerRegistry(
-                    credentialsId: 'dockerhub',
-                    url: ''
-                ) {
-
-                    sh "docker push ${IMAGE_NAME}"
+                withDockerRegistry([credentialsId: 'dockerhub-credentials', url: '']) {
+                    sh 'docker push $IMAGE_NAME'
                 }
             }
         }
 
-        stage('Run Docker Container') {
-
+        stage('Stop Old Container') {
             steps {
-
                 sh '''
-                docker stop survey-app || true
-                docker rm survey-app || true
+                docker stop $CONTAINER_NAME || true
+                docker rm $CONTAINER_NAME || true
+                '''
+            }
+        }
 
+        stage('Run Docker Container') {
+            steps {
+                sh '''
                 docker run -d \
-                --name survey-app \
-                -p 8080:8080 \
-                ${IMAGE_NAME}
+                --name $CONTAINER_NAME \
+                -p 9090:8080 \
+                $IMAGE_NAME
                 '''
             }
         }
@@ -78,44 +77,36 @@ pipeline {
     post {
 
         success {
-
-            mail(
-                to: "${NOTIFY_EMAIL}",
-
-                subject: "Jenkins Pipeline SUCCESS",
-
+            emailext(
+                subject: "SUCCESS: ${JOB_NAME} #${BUILD_NUMBER}",
                 body: """
-                SUCCESS: Jenkins Pipeline Completed Successfully.
+                Build SUCCESS
 
-                Project:
-                College Campus Survey Application
+                Project: ${JOB_NAME}
+                Build Number: ${BUILD_NUMBER}
 
-                GitHub Repository:
-                https://github.com/Likhitha-HM/OEE
+                Docker Container Running Successfully.
 
-                Docker Image:
-                ${IMAGE_NAME}
-
-                Application deployed successfully.
-                """
+                Build URL:
+                ${BUILD_URL}
+                """,
+                to: "likhithahm953@gmail.com"
             )
         }
 
         failure {
-
-            mail(
-                to: "${NOTIFY_EMAIL}",
-
-                subject: "Jenkins Pipeline FAILURE",
-
+            emailext(
+                subject: "FAILED: ${JOB_NAME} #${BUILD_NUMBER}",
                 body: """
-                FAILURE: Jenkins Pipeline Failed.
+                Build FAILED
 
-                Project:
-                College Campus Survey Application
+                Project: ${JOB_NAME}
+                Build Number: ${BUILD_NUMBER}
 
-                Check Jenkins console logs for errors.
-                """
+                Check Jenkins Console Output:
+                ${BUILD_URL}
+                """,
+                to: "likhithahm953@gmail.com"
             )
         }
     }
